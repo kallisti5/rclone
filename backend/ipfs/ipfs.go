@@ -274,7 +274,7 @@ func (f *Fs) Precision() time.Duration {
 //
 // This should return ErrorDirNotFound if the directory isn't
 // found.
-func (f *Fs) List(dir string) (entries fs.DirEntries, err error) {
+func (f *Fs) List(ctx context.Context, dir string) (entries fs.DirEntries, err error) {
 	f.ipfsRoot.RLock()
 	rootHash := f.ipfsRoot.hash
 	f.ipfsRoot.RUnlock()
@@ -315,7 +315,7 @@ func newObject(f *Fs, remote string, stat *api.ObjectStat) *Object {
 
 // NewObject finds the Object at remote.  If it can't be found
 // it returns the error fs.ErrorObjectNotFound. If is a directory
-func (f *Fs) NewObject(remote string) (fs.Object, error) {
+func (f *Fs) NewObject(ctx context.Context, remote string) (fs.Object, error) {
 	f.ipfsRoot.RLock()
 	rootHash := f.ipfsRoot.hash
 	f.ipfsRoot.RUnlock()
@@ -354,7 +354,7 @@ func (f *Fs) NewObject(remote string) (fs.Object, error) {
 // Copy the reader in to the new object which is returned
 //
 // The new object may have been created if an error is returned
-func (f *Fs) Put(in io.Reader, src fs.ObjectInfo, options ...fs.OpenOption) (fs.Object, error) {
+func (f *Fs) Put(ctx context.Context, in io.Reader, src fs.ObjectInfo, options ...fs.OpenOption) (fs.Object, error) {
 	err := f.checkReadOnly()
 	if err != nil {
 		return nil, err
@@ -378,7 +378,7 @@ func (f *Fs) Put(in io.Reader, src fs.ObjectInfo, options ...fs.OpenOption) (fs.
 }
 
 // Mkdir creates the container if it doesn't exist
-func (f *Fs) Mkdir(dir string) error {
+func (f *Fs) Mkdir(ctx context.Context, dir string) error {
 	err := f.checkReadOnly()
 	if err != nil {
 		return err
@@ -409,7 +409,7 @@ func (f *Fs) Mkdir(dir string) error {
 // Rmdir deletes the root folder
 //
 // Returns ErrorDirectoryNotEmpty if it isn't empty
-func (f *Fs) Rmdir(dir string) error {
+func (f *Fs) Rmdir(ctx context.Context, dir string) error {
 	err := f.checkReadOnly()
 	if err != nil {
 		return err
@@ -628,7 +628,7 @@ func (o *Object) Remote() string {
 }
 
 // Hash returns the SHA-1 of an object returning a lowercase hex string
-func (o *Object) Hash(t hash.Type) (string, error) {
+func (o *Object) Hash(ctx context.Context, t hash.Type) (string, error) {
 	return "", hash.ErrUnsupported
 }
 
@@ -643,7 +643,7 @@ func (o *Object) ModTime() time.Time {
 }
 
 // SetModTime sets the modification time of the local fs object
-func (o *Object) SetModTime(modTime time.Time) error {
+func (o *Object) SetModTime(ctx context.Context, modTime time.Time) error {
 	// Addition of modification time on IPFS is discussed at:
 	// https://github.com/ipfs/unixfs-v2/issues/1
 	return fs.ErrorCantSetModTime
@@ -655,7 +655,7 @@ func (o *Object) Storable() bool {
 }
 
 // Open an object for read
-func (o *Object) Open(options ...fs.OpenOption) (in io.ReadCloser, err error) {
+func (o *Object) Open(ctx context.Context, options ...fs.OpenOption) (in io.ReadCloser, err error) {
 	o.fs.ipfsRoot.RLock()
 	absolutePath := path.Join(o.fs.ipfsRoot.hash, o.relativePath())
 	o.fs.ipfsRoot.RUnlock()
@@ -667,7 +667,7 @@ func (o *Object) Open(options ...fs.OpenOption) (in io.ReadCloser, err error) {
 // If existing is set then it updates the object rather than creating a new one
 //
 // The new object may have been created if an error is returned
-func (o *Object) Update(in io.Reader, src fs.ObjectInfo, options ...fs.OpenOption) error {
+func (o *Object) Update(ctx context.Context, in io.Reader, src fs.ObjectInfo, options ...fs.OpenOption) error {
 	o2, err := o.fs.Put(in, o, options...)
 	if err != nil {
 		return err
@@ -678,7 +678,7 @@ func (o *Object) Update(in io.Reader, src fs.ObjectInfo, options ...fs.OpenOptio
 }
 
 // Remove an object
-func (o *Object) Remove() error {
+func (o *Object) Remove(ctx context.Context) error {
 	err := o.fs.checkReadOnly()
 	if err != nil {
 		return err
