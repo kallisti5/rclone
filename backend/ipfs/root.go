@@ -1,9 +1,9 @@
 package ipfs
 
 import (
-	"github.com/ncw/rclone/backend/ipfs/api"
-	"github.com/ncw/rclone/fs"
-	"github.com/ncw/rclone/lib/atexit"
+	"github.com/rclone/rclone/backend/ipfs/api"
+	"github.com/rclone/rclone/fs"
+	"github.com/rclone/rclone/lib/atexit"
 	"github.com/pkg/errors"
 	"path"
 	"strings"

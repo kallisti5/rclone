@@ -2,10 +2,10 @@ package ipfs
 
 import (
 	"bytes"
-	"github.com/ncw/rclone/fs"
-	"github.com/ncw/rclone/fs/hash"
-	"github.com/ncw/rclone/fs/object"
-	"github.com/ncw/rclone/fstest"
+	"github.com/rclone/rclone/fs"
+	"github.com/rclone/rclone/fs/hash"
+	"github.com/rclone/rclone/fs/object"
+	"github.com/rclone/rclone/fstest"
 	"github.com/stretchr/testify/require"
 	"io"
 	"testing"
